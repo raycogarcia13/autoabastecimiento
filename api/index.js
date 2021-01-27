@@ -1,7 +1,9 @@
 const express = require('express')
 const consign = require("consign")
 const bodyParser = require("body-parser")
-// const middlewares = require("./libs/middlewares")
+const middlewares = require("./libs/middlewares")
+var https = require('https')
+var http = require('http')
 
 // Create express instance
 const app = express()
@@ -15,14 +17,15 @@ app.use(bodyParser.json());
 // app.use(middlewares.verifyToken);
 
 
-// consign({
-//         cwd: __dirname
-//     })
-//     .include('./db.js')
-//     .then('./models')
-//     .then('./controllers')
-//     .then('./routes')
-//     .into(app);
+consign({
+        cwd: __dirname
+    })
+    .include('./db/db.js')
+    .then('./models')
+    .include('./db/migrate.js')
+    .then('./controllers')
+    .then('./routes')
+    .into(app);
 
 
 module.exports = app
