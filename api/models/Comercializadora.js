@@ -12,8 +12,8 @@ module.exports = app => {
 
     const Data = new Schema({
         nombre: { type: String, required: true, index: { unique: true } },
-        tipo: { type: String, required: true },
-        consejo_id: { type: mongoose.Types.ObjectId, required: true },
+        consejo_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Consejo' },
+        basep_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Basesp' },
         location: pointSchema
     });
 

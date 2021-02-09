@@ -6,8 +6,8 @@ module.exports = app => {
         // .post(consejosValidationRules(), app.controllers.consejoController.store)
         .get(app.controllers.consejoController.index);
 
-    app.put('/consejos/:id', consejosValidationRules(), app.controllers.consejoController.update);
-    // app.get('/states/:id', app.controllers.Social.stateController.show);
-    // app.get('/states/getAllComments/:state_id', app.controllers.Social.stateController.getAllComments);
+    app.put('/consejos/:id', app.controllers.consejoController.update);
+    app.get('/consejos/:id', app.controllers.consejoController.show);
+    app.get('/consejos_geometry/:id', app.controllers.consejoController.geojson);
     // app.delete('/states/:id', app.controllers.Social.stateController.delete)
 }

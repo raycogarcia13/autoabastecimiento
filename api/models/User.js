@@ -9,7 +9,7 @@ module.exports = app => {
         password: { type: String, required: true },
         email: { type: String, required: true, index: { unique: true } },
         name: { type: String, required: true },
-        rol_id: { type: mongoose.Types.ObjectId, required: true }
+        rol_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Rol' }
     });
 
     return mongoose.model('User', User)

@@ -7,7 +7,7 @@
       fixed
       app
       light
-      width="300"
+      width="290"
     >
       <v-list>
         <v-list-item>
@@ -60,7 +60,7 @@
       color="#0f7b4a"
       class="white--text"
     >
-      <v-app-bar-nav-icon v-show="!drawer" @click.stop="drawer = !drawer" class="white--text" />
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="white--text" />
       <v-toolbar-title v-text="title" />
       <v-spacer />
       <v-btn
@@ -83,22 +83,22 @@
       fixed
     >
       <v-list>
-        <v-list-item @click.native="right = !right">
+        <v-list-item @click.native="$router.go(-1)">
           <v-list-item-action>
             <v-icon light>
-              mdi-repeat
+              mdi-arrow-left
             </v-icon>
           </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
+          <v-list-item-title>Ir atrás</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-footer
-      :absolute="!fixed"
+    <!-- <v-footer
+      :absolute="fixed"
       app
     >
       <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    </v-footer> -->
   </v-app>
 </template>
 
@@ -118,12 +118,12 @@ export default {
         {
           icon: 'mdi-chart-bubble',
           title: 'Captador',
-          to: '/inspire'
+          to: '/captador'
         },
         {
           icon: 'mdi-map',
           title: 'Mapa',
-          to: '/map'
+          to: '/mapa'
         },
         {
           icon: 'mdi-table',
@@ -139,8 +139,8 @@ export default {
         },
         {
           icon: 'mdi-table',
-          title: 'Unidades Porductivas',
-          to: '/querys'
+          title: 'Unidades Productivas',
+          to: '/config/unidades'
         },
         {
           icon: 'mdi-table',

@@ -1,4 +1,4 @@
-const Repository = require('../repository/ConsejosRepository').ConsejosRepository;
+const Repository = require('../repository/UnidadRepository').UnidadRepository;
 
 module.exports = app => {
 
@@ -50,7 +50,7 @@ module.exports = app => {
                             "type": "Feature",
                             "properties": state,
                             "geometry": {
-                                "type": "MultiPolygon",
+                                "type": "Point",
                                 "coordinates": state.location.coordinates
                             }
                         }]

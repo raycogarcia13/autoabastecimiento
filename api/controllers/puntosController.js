@@ -1,7 +1,9 @@
-const Repository = require('../repository/ConsejosRepository').ConsejosRepository;
+const Repository = require('../repository/PuntosRepository').PuntosRepository;
+const mongoose = require('mongoose');
 
 module.exports = app => {
 
+    var Comer = mongoose.model('Comercializadora');
     var stateRepository = new Repository();
 
     return {
@@ -14,14 +16,28 @@ module.exports = app => {
                 }
             });
         },
-        index: (req, res) => {
-            stateRepository.all(req, function(error, states) {
-                if (!error) {
-                    return res.json({ message: 'all data', data: states });
-                } else {
-                    return res.status(500).json({ message: 'Error getting states', error: error });
-                }
-            });
+        index: async(req, res) => {
+
+            let data = await Comer.find()
+                .populate('basep_id', 'nombre')
+                .populate('consejo_id', 'nombre')
+                .select('nombre consejo_id');
+
+            // stateRepository.all(req, function(error, states) {
+            //     if (!error) {
+            return res.json({ message: 'all data', data: data });
+            //     } else {
+            //         return res.status(500).json({ message: 'Error getting states', error: error });
+            //     }
+            // });
+            // stateRepository.getRelation(req, (error, state) => {
+            //     if (!error) {
+            //         return res.json({ message: 'saved', _id: state._id, data: state });
+            //     } else {
+            //         return res.status(500).json({ message: 'Error saving state', error: error });
+            //     }
+            // })
+
         },
         show: (req, res) => {
             stateRepository.findOne(req, function(error, state) {
@@ -50,7 +66,7 @@ module.exports = app => {
                             "type": "Feature",
                             "properties": state,
                             "geometry": {
-                                "type": "MultiPolygon",
+                                "type": "Point",
                                 "coordinates": state.location.coordinates
                             }
                         }]

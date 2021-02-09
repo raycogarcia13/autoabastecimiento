@@ -35,7 +35,7 @@ module.exports = {
     },
     // middleware para los mensajes de errores de validación
     validate: (req, res, next) => {
-        return next();
+        // return next();
         const errors = validationResult(req)
         if (errors.isEmpty()) {
             return next()

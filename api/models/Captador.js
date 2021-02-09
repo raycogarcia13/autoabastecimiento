@@ -1,34 +1,40 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 module.exports = app => {
 
     const Schema = mongoose.Schema;
 
     const Data = new Schema({
-        fecha: { type: Date, required: true, default: Date.now() },
-        comercializadora_id: { type: mongoose.Types.ObjectId, required: true },
-        viandas: [{
-            producto_id: { type: mongoose.Types.ObjectId, required: true },
+        fecha: {
+            dia: { type: Number, required: true, default: new Date().getDate() },
+            mes: { type: Number, required: true, default: new Date().getMonth() + 1 },
+            anno: { type: Number, required: true, default: new Date().getFullYear() },
+        },
+        // fecha: { type: Date, required: true, default: moment().format('DD-MM-YYY') },
+        comercializadora_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Comercializadora' },
+        Viandas: [{
+            producto_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Cultivos' },
             cant: { type: Number, required: true },
             um: { type: String, required: true, default: 'kg' }
         }],
-        hortalizas: [{
-            producto_id: { type: mongoose.Types.ObjectId, required: true },
+        Hortalizas: [{
+            producto_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Cultivos' },
             cant: { type: Number, required: true },
             um: { type: String, required: true, default: 'kg' }
         }],
-        frutales: [{
-            producto_id: { type: mongoose.Types.ObjectId, required: true },
+        Frutales: [{
+            producto_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Cultivos' },
             cant: { type: Number, required: true },
             um: { type: String, required: true, default: 'kg' }
         }],
-        granos: [{
-            producto_id: { type: mongoose.Types.ObjectId, required: true },
+        Granos: [{
+            producto_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Cultivos' },
             cant: { type: Number, required: true },
             um: { type: String, required: true, default: 'kg' }
         }],
-        proteinas: [{
-            producto_id: { type: mongoose.Types.ObjectId, required: true },
+        Proteinas: [{
+            producto_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Cultivos' },
             cant: { type: Number, required: true },
             um: { type: String, required: true, default: 'kg' }
         }],
