@@ -7,11 +7,11 @@ module.exports = app => {
 
     const Data = new Schema({
         fecha: {
-            dia: { type: Number, required: true, default: new Date().getDate() },
+            dia: { type: Number, required: true, default: new Date().getDate() + 1 },
             mes: { type: Number, required: true, default: new Date().getMonth() + 1 },
             anno: { type: Number, required: true, default: new Date().getFullYear() },
         },
-        // fecha: { type: Date, required: true, default: moment().format('DD-MM-YYY') },
+        fechad: { type: Date, required: true, default: Date.now() },
         comercializadora_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Comercializadora' },
         Viandas: [{
             producto_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Cultivos' },

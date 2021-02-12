@@ -40,6 +40,7 @@
                   single-line
                   counter
                   autofocus
+                  v-on:keyup.enter="save(props.item)"
                   ></v-text-field>
                </v-form>
             </template>
@@ -70,7 +71,7 @@
 </template>
 <script>
   export default {
-    props:['items','title'],
+    props:['items','title','fecha','unidad'],
     data () {
       return {
         snack: false,
@@ -94,14 +95,14 @@
         if(this.$refs.form.validate())
         {
           let uri = '/api/captador';
-          item['date'] = Date.now();
-          // this.$axios.put(uri,item).then(res=>{
+          item['date'] =this.fecha;
+          item['unidad'] =this.unidad._id;
+          item.cant = Number.parseFloat(item.cant);
+          this.$axios.put(uri,item).then(res=>{
             this.snack = true
             this.snackColor = 'success'
             this.snackText = 'Información guardada correctamente';
-            // item.cant = Number.parseFloat(item.cant);
-            // console.log(item);
-          // })
+          })
         }else
         {
             this.$refs.form.reset()

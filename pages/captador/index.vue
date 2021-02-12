@@ -30,6 +30,7 @@
             v-model="fecha"
             no-title
             scrollable
+            :max="maxDate"
           >
             <v-spacer></v-spacer>
             <v-btn
@@ -37,7 +38,7 @@
               color="primary"
               @click="menu = false"
             >
-              Cancel
+              Cancelar
             </v-btn>
             <v-btn
               text
@@ -94,11 +95,11 @@
     </v-row>
 </v-expand-transition>
     <v-row v-if="res">
-     <TableProd :items="table('Viandas')" title="Viandas" />
-     <TableProd :items="table('Hortalizas')" title="Hortalizas" />
-     <TableProd :items="table('Granos')" title="Granos" />
-     <TableProd :items="table('Frutales')" title="Frutales" />
-     <TableProd :items="table('Proteínas')" title="Proteínas" />
+     <TableProd :items="table('Viandas')" :fecha="fecha" :unidad="unidad" title="Viandas" />
+     <TableProd :items="table('Hortalizas')" :fecha="fecha" :unidad="unidad" title="Hortalizas" />
+     <TableProd :items="table('Granos')" :fecha="fecha" :unidad="unidad" title="Granos" />
+     <TableProd :items="table('Frutales')" :fecha="fecha" :unidad="unidad" title="Frutales" />
+     <TableProd :items="table('Proteinas')" :fecha="fecha" :unidad="unidad" title="Proteínas" />
     </v-row>
 </v-responsive>
 </template>
@@ -117,6 +118,7 @@ export default {
        activo:{},
        menu:false,
        fecha: moment().toISOString().substr(0,10),
+       maxDate: moment().toISOString().substr(0,10),
       //  fecha: new Date().toISOString().substr(0, 10),
 
     }
@@ -139,7 +141,6 @@ export default {
       if(!this.unidad)
         return;
       this.cargando = true;
-      console.log(this.fecha);
       let uri = '/api/captador';
       this.$axios.post(uri,{fecha:this.fecha,punto:this.unidad}).then(res=>{
         if(res.data.status=='success')

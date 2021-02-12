@@ -91,6 +91,15 @@
           </v-list-item-action>
           <v-list-item-title>Ir atrás</v-list-item-title>
         </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item @click="logout">
+          <v-list-item-action>
+            <v-icon light>
+              mdi-logout
+            </v-icon>
+          </v-list-item-action>
+          <v-list-item-title>Salir</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <!-- <v-footer
@@ -159,6 +168,13 @@ export default {
       rightDrawer: false,
       title: 'Autoabastecimiento'
     }
-  }
+  },
+  methods: {
+    logout()
+    {
+      this.$router.push('/login');
+      this.$store.dispatch("logOut");
+    }
+  },
 }
 </script>

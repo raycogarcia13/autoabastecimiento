@@ -1,89 +1,208 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-app>
+    <v-responsive>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-row>
+            <v-col>
+              <v-card>
+                <v-card-title>Cumplimiento del día</v-card-title>
+                <v-card-text class="text-center">
+                    <v-progress-circular
+                      :size="100"
+                      :width="15"
+                      :value="36"
+                      color="teal"
+                    >
+                     36
+                    </v-progress-circular>
+                </v-card-text>
+                <v-card-actions>
+                  <b>Plan:&nbsp;</b> 58
+                  <v-spacer></v-spacer>
+                  <b>Real:&nbsp;</b> 58
+                </v-card-actions>
+              </v-card>
+            </v-col>
+            <v-col>
+              <v-card>
+                <v-card-title>Cumplimiento del mes</v-card-title>
+                <v-card-text class="text-center">
+                    <v-progress-circular
+                      :size="100"
+                      :width="15"
+                      :value="valueMes.percent"
+                      color="red"
+                    >
+                     {{valueMes.percent}}
+                    </v-progress-circular>
+                </v-card-text>
+                <v-card-actions>
+                  <b>Plan:&nbsp;</b> {{valueMes.plan}} t
+                  <v-spacer></v-spacer>
+                  <b>Real:&nbsp;</b> {{valueMes.real}} t
+              </v-card-actions>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-card>
+                <v-card-title>
+                  Tendencia
+                  <v-spacer></v-spacer>
+                    <v-switch
+                      v-model="anno"
+                      :label="`${(anno)?'Año':'Mes'}`"
+                    ></v-switch>
+                </v-card-title>
+                <v-card-subtitle></v-card-subtitle>
+                <v-card-text>
+                  <v-sparkline
+                      :labels="labels"
+                      :value="value"
+                      line-width="2"
+                      padding="16"
+                      :smooth="5"
+                    ></v-sparkline>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="12" md="6">
+            <v-row>
+              <v-col>
+                <Cuadro title="Hoy" icon="mdi-calendar" color="success" descr="Comercializado hoy" value="78 kg"/>
+              </v-col>
+              <v-col>
+                <Cuadro title="Mes" icon="mdi-calendar-month" color="primary" descr="Comercializado hoy" value="78 kg"/>
+              </v-col>
+              <v-col>
+                <Cuadro title="Hoy" icon="mdi-cogs" color="red" descr="Comercializado hoy" value="78 kg"/>
+              </v-col>
+            </v-row>
+            <v-divider class="mt-5"></v-divider>
+
+            <v-card>
+              <v-card-title>Puntos que no han comercializado</v-card-title>
+              <v-card-text>
+                <v-list three-line>
+                    <template v-for="(item, index) in items">
+                      <v-divider
+                        v-if="item.divider"
+                        :key="index"
+                        :inset="item.inset"
+                      ></v-divider>
+
+                      <v-list-item
+                        v-else
+                        :key="item.title"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title v-html="item.title"></v-list-item-title>
+                          <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                  </v-list>
+              </v-card-text>
+            </v-card>
+
+        </v-col>
+      </v-row>
+    </v-responsive>
+  </v-app>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
-
+import {cantDaysMonth} from "@/api/libs/dates"
 export default {
-  components: {
-    Logo,
-    VuetifyLogo
-  }
+  data() {
+    return {
+       anno:false,
+       items: [
+        {
+          title: 'Brunch this weekend?',
+          subtitle: `<span class="text--primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
+        },
+        { divider: true, inset: true },
+        {
+          title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
+          subtitle: `<span class="text--primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`,
+        },
+        { divider: true, inset: true },
+        {
+          title: 'Oui oui',
+          subtitle: '<span class="text--primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
+        },
+        { divider: true, inset: true },
+        {
+          title: 'Birthday gift',
+          subtitle: '<span class="text--primary">Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?',
+        },
+        { divider: true, inset: true },
+        {
+          title: 'Recipe to try',
+          subtitle: '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
+        },
+      ],
+      plan_real_mes:null
+    }
+  },
+  computed: {
+    labels(){
+      let labl=[];
+      if(!this.anno)
+      {
+        for(let i=1;i<cantDaysMonth(8,2021)+1;i++)
+          labl.push(i);
+      }
+
+      return labl;
+    },
+
+    value(){
+       let val=[];
+      if(!this.anno)
+      {
+        for(let i=1;i<Math.ceil(Math.random() * (31 - 1) + 1);i++)
+          val.push( Math.ceil(Math.random() * (1000 - 1) + 1));
+      }
+
+      return val;
+    },
+    valueMes()
+    {
+      let plan= 0;
+      let real = 0;
+      let percent = 0;
+      if(this.plan_real_mes)
+      {
+        let l =this.plan_real_mes.plan;
+        plan+= l.Viandas+l.Hortalizas+l.Frutales+l.Granos+l.Proteinas;
+        l =this.plan_real_mes.real;
+        real+= l.Viandas+l.Hortalizas+l.Frutales+l.Granos+l.Proteinas;
+        percent = real/plan*100
+      }
+      return {plan:plan.toFixed(2),real:real.toFixed(2),percent:percent.toFixed(1)};
+    }
+  },
+  methods: {
+    loadPlanReal()
+    {
+      let uri = '/api/home/plan_real';
+      this.$axios.post(uri,{limit:'mes'}).then(res=>{
+        this.plan_real_mes = res.data;
+      })
+    },
+    loadData()
+    {
+      this.loadPlanReal();
+    }
+  },
+  mounted() {
+    this.loadData();
+  },
 }
 </script>

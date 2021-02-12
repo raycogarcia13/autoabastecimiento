@@ -15,7 +15,7 @@ module.exports = app => {
             let tipos = await Tipos.find();
 
             let fecha = new Date(Date.parse(req.body.fecha));
-            let dia = fecha.getDate();
+            let dia = fecha.getDate() + 1;
             let mes = fecha.getMonth() + 1;
             let anno = fecha.getFullYear();
             fecha = { dia, mes, anno }
@@ -40,7 +40,8 @@ module.exports = app => {
                     p.push({
                         id: pi._id,
                         nombre: pi.nombre,
-                        cant: cant
+                        cant: cant,
+                        type: item.nombre
                     })
                 }
                 all.push({
@@ -60,11 +61,54 @@ module.exports = app => {
         },
         store: async(req, res) => {
 
-            let obj = {
-                cant: req
+            let fecha = new Date(Date.parse(req.body.date));
+            let dia = fecha.getDate() + 1;
+            let mes = fecha.getMonth() + 1;
+            let anno = fecha.getFullYear();
+            let fecha2 = Date.parse(req.body.date);
+            fecha = { dia, mes, anno }
+
+            let data = await Captador.findOne({ fecha, comercializadora_id: req.body.unidad });
+            if (data) {
+
+                let dtype = data[req.body.type];
+                let find = false;
+                for (let i = 0; i < dtype.length; i++) {
+                    let item = dtype[i];
+                    if (item.producto_id == req.body.id) {
+                        find = true;
+                        data[req.body.type][i].cant = req.body.cant;
+                        break;
+                    }
+                }
+                if (find) {
+                    data.save();
+                } else {
+                    data[req.body.type].push({
+                        producto_id: req.body.id,
+                        cant: req.body.cant
+                    });
+                    data.save();
+
+                }
+
+                return res.json(data)
             }
 
-            return res.json(req.body)
+            //sino existe lo creo
+            data = Captador({
+                fecha,
+                fechad: fecha2,
+                comercializadora_id: req.body.unidad,
+            });
+            data[req.body.type].push({
+                producto_id: req.body.id,
+                cant: req.body.cant
+            });
+
+            data.save();
+            return res.json({ status: "success", data: data });
+
         }
     }
 

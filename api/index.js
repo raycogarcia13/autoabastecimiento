@@ -9,12 +9,12 @@ var http = require('http')
 const app = express()
 
 // Init body-parser options (inbuilt with express)
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
 // app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '100mb' }));
 
 // middleware para verificar token
-// app.use(middlewares.verifyToken);
+app.use(middlewares.verifyToken);
 
 
 consign({

@@ -34,17 +34,42 @@ export default {
 
     // Modules (https://go.nuxtjs.dev/config-modules)
     modules: [
-        // https://go.nuxtjs.dev/axios
         '@nuxtjs/axios',
-        // https://go.nuxtjs.dev/pwa
         '@nuxtjs/pwa',
         'nuxtjs-mdi-font',
-        'nuxt-leaflet'
+        'nuxt-leaflet',
+        '@nuxtjs/auth'
     ],
 
     // Axios module configuration (https://go.nuxtjs.dev/config-axios)
     axios: {},
-
+    router: {
+        middleware: ['auth']
+    },
+    auth: {
+        localStorage: false,
+        cookie: {
+            prefix: 'sec.',
+            options: {
+                path: '/',
+                expires: 1825
+            }
+        },
+        redirect: {
+            login: '/login',
+            logout: '/login',
+            home: '/'
+        },
+        strategies: {
+            local: {
+                endpoints: {
+                    login: { url: '/api/login', method: 'post', propertyName: 'data.token' },
+                    logout: { url: '/api/logout', method: 'post' },
+                    user: { url: '/api/me', method: 'get', propertyName: false }
+                }
+            }
+        }
+    },
     serverMiddleware: {
         '/api': '~/api'
     },

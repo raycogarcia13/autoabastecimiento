@@ -57,7 +57,7 @@ module.exports = app => {
             if (token) {
                 let tkn = token.replace(/^Bearer\s/, '');
                 await Token.deleteOne({ token: tkn }, (err, data) => {
-                    return res.status(401).json({ message: 'logout success' })
+                    return res.status(200).json({ message: 'logout success' })
                 })
 
             }

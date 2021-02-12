@@ -23,20 +23,7 @@ module.exports = app => {
                 .populate('consejo_id', 'nombre')
                 .select('nombre consejo_id');
 
-            // stateRepository.all(req, function(error, states) {
-            //     if (!error) {
             return res.json({ message: 'all data', data: data });
-            //     } else {
-            //         return res.status(500).json({ message: 'Error getting states', error: error });
-            //     }
-            // });
-            // stateRepository.getRelation(req, (error, state) => {
-            //     if (!error) {
-            //         return res.json({ message: 'saved', _id: state._id, data: state });
-            //     } else {
-            //         return res.status(500).json({ message: 'Error saving state', error: error });
-            //     }
-            // })
 
         },
         show: (req, res) => {
@@ -51,10 +38,6 @@ module.exports = app => {
         geojson: (req, res) => {
             stateRepository.findOne(req, function(error, state) {
                 if (!error) {
-                    // let json = {
-                    //     type: "MultiPolygon",
-                    //     coordinates: state.location.coordinates
-                    // }
                     let json = {
                         "type": "FeatureCollection",
                         "name": state.nombre,
