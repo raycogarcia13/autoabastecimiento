@@ -174,7 +174,7 @@ module.exports = app => {
 
 
 
-            res.json({ tipo, fecha, demData })
+            res.json({ tipo, fecha, data: demData })
         }
     }
 

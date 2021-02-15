@@ -3,7 +3,7 @@
         <v-app-bar color="white" elevation="0" class="text-h4 mb-5">
           <v-row>
             <v-col cols="8">
-                Cumplimiento: {{tipo}}
+                Cumplimiento: {{(tipo)?tipo.nombre:''}}
             </v-col>
             <v-col cols="4">
               <v-combobox
@@ -56,7 +56,7 @@
       return {
         search: '',
         calories: '',
-        tipo:'',
+        tipo:null,
         loading:false,
         data: [],
         filtered:[],
@@ -114,13 +114,17 @@
           })
         },
         loadData(){
-           let uri = '/api/query/cumplimiento/'+this.tipo;
+           let uri = '/api/query/cumplimiento/'+this.tipo._id;
            this.data = [];
-           this.loading = true;
-           this.$axios.get(uri).then(res=>{
-               this.data = res.data.data;
-               this.loading = false
-           })     
+           if(this.tipo)
+           {
+             this.loading = true;
+             this.$axios.get(uri).then(res=>{
+                 this.data = res.data.data;
+                 this.loading = false
+             })     
+           }
+
         },
         getFiltered(e){
           this.filtered = e;
