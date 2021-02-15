@@ -32,6 +32,28 @@
       <v-list-group no-action>
           <template v-slot:activator>
             <v-list-item-action>
+              <v-icon>mdi-table</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Consultas</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+            v-for="(item) in querys"
+            :key="item.title"
+            link
+            :to="item.to"
+          >
+            <v-list-item-icon>
+              <v-icon v-text="item.icon"></v-icon>
+            </v-list-item-icon>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+          </v-list-item>
+        </v-list-group>
+      <v-list-group no-action>
+          <template v-slot:activator>
+            <v-list-item-action>
               <v-icon>mdi-cogs</v-icon>
             </v-list-item-action>
             <v-list-item-content>
@@ -133,12 +155,30 @@ export default {
           icon: 'mdi-map',
           title: 'Mapa',
           to: '/mapa'
+        }
+      ],
+      querys:[
+        {
+          icon: 'mdi-table-eye',
+          title: 'Demanda del mes',
+          to: '/querys/demanda_mes'
         },
         {
-          icon: 'mdi-table',
-          title: 'Consultas',
-          to: '/querys'
+          icon: 'mdi-table-eye',
+          title: 'Demanda del dia',
+          to: '/querys/demanda_dia'
+        },
+        {
+          icon: 'mdi-table-eye',
+          title: 'Acomulado del mes',
+          to: '/querys/acomulado_mes'
+        },
+        {
+          icon: 'mdi-table-eye',
+          title: 'Cumplimientos',
+          to: '/querys/cumplimientos'
         }
+        
       ],
       confs:[
         {
