@@ -38,12 +38,12 @@
         <template slot="body.append">
             <tr class="font-weight-black">
             <td>Totales</td>
-            <td class="text-xs-right">{{sumHabitantes}}</td>
-            <td class="text-xs-right">{{sumViandas}}</td>
-            <td class="text-xs-right">{{sumHortalizas}}</td>
-            <td class="text-xs-right">{{sumFrutales}}</td>
-            <td class="text-xs-right">{{sumGranos}}</td>
-            <td class="text-xs-right">{{sumProteinas}}</td>
+            <td class="text-xs-right">{{sumPlanAc}}</td>
+            <td class="text-xs-right">{{sumRealAc}}</td>
+            <td class="text-xs-right">{{sumPercAc}}</td>
+            <td class="text-xs-right">{{sumPlanDia}}</td>
+            <td class="text-xs-right">{{sumRealDia}}</td>
+            <td class="text-xs-right">{{sumPercDia}}</td>
             </tr>
         </template>
 
@@ -65,45 +65,41 @@
             {
                 text: 'Consejos Populares',
                 align: 'start',
-                sortable: false,
                 value: 'consejo',
             },
-            {
-                text: 'Habitantes',
-                value: 'habitantes',
-            },
-            { text: 'Viandas (15)', value: 'Viandas' },
-            { text: 'Hortalizas (10)', value: 'Hortalizas' },
-            { text: 'Granos (2)', value: 'Frutales' },
-            { text: 'Frutales (3)', value: 'Granos' },
-            { text: 'Proteína (5)', value: 'Proteinas' }
+            { text: 'Plan Acom (t)',value: 'plan_ac'},
+            { text: 'Real Acom (t)',value: 'real_ac'},
+            { text: '% Acom (%)',value: 'perc_ac'},
+            { text: 'Plan dia (t)',value: 'plan_dia'},
+            { text: 'Real dia (t)',value: 'real_dia'},
+            { text: '% dia (%)',value: 'perc_dia'}
         ]
       }
     },
     computed: {
-      sumHabitantes(){
-        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.habitantes);})
+      sumPlanAc(){
+        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.plan_ac);})
         return suma;
       },
-      sumViandas(){
-        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.Viandas);})
+      sumRealAc(){
+        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.real_ac);})
         return suma.toFixed(2);
       },
-      sumHortalizas(){
-        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.Hortalizas);})
+      sumPercAc(){
+        let suma =(this.sumRealAc/ this.sumPlanAc)*100;
+        return suma.toFixed(2)+'%';
+      },
+      sumPlanDia(){
+        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.plan_dia);})
         return suma.toFixed(2);
       },
-      sumFrutales(){
-        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.Frutales);})
+      sumRealDia(){
+        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.real_dia);})
         return suma.toFixed(2);
       },
-      sumGranos(){
-        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.Granos);})
-        return suma.toFixed(2);
-      },
-      sumProteinas(){
-        let suma = 0; this.data.forEach(it=>{suma+=parseFloat(it.Proteinas);})
-        return suma.toFixed(2);
+      sumPercDia(){
+        let suma =(this.sumRealDia/ this.sumPlanDia)*100;
+        return suma.toFixed(2)+'%';
       }
     },
     methods: {

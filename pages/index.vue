@@ -180,12 +180,12 @@ export default {
       if(this.plan_real_mes)
       {
         let l =this.plan_real_mes.plan;
-        plan+= l.Viandas+l.Hortalizas+l.Frutales+l.Granos+l.Proteinas;
+        plan+= parseFloat(l.Viandas)+parseFloat(l.Hortalizas)+parseFloat(l.Frutales)+parseFloat(l.Granos)+parseFloat(l.Proteinas);
         l =this.plan_real_mes.real;
-        real+= l.Viandas+l.Hortalizas+l.Frutales+l.Granos+l.Proteinas;
+        real+= parseFloat(l.Viandas)+parseFloat(l.Hortalizas)+parseFloat(l.Frutales)+parseFloat(l.Granos)+parseFloat(l.Proteinas);
         percent = real/plan*100
       }
-      return {plan:plan.toFixed(2),real:real.toFixed(2),percent:percent.toFixed(1)};
+      return {plan:parseFloat(plan).toFixed(2),real:parseFloat(real).toFixed(2),percent:parseFloat(percent).toFixed(1)};
     }
   },
   methods: {
@@ -194,6 +194,7 @@ export default {
       let uri = '/api/home/plan_real';
       this.$axios.post(uri,{limit:'mes'}).then(res=>{
         this.plan_real_mes = res.data;
+        console.log(this.plan_real_mes);
       })
     },
     loadData()

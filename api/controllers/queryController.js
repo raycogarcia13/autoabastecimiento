@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 let asyncForEach = require("../libs/asyncForEach")
-let { cantDaysMonth } = require("../libs/dates")
+let { cantDaysMonth, diasHabiles } = require("../libs/dates")
 
 
 module.exports = app => {
@@ -33,7 +33,10 @@ module.exports = app => {
             });
 
             await asyncForEach(tipos, async(item) => {
-                plan[item.nombre] = (plan[item.nombre] / (2.1739 * 1000)).toFixed(2);
+                if (item.nombre == 'Proteinas')
+                    plan[item.nombre] = ((plan[item.nombre] / 1000)).toFixed(2);
+                else
+                    plan[item.nombre] = (plan[item.nombre] / (2.1739 * 1000)).toFixed(2);
             })
             let real = {};
 
@@ -96,7 +99,8 @@ module.exports = app => {
 
             let fecha = new Date();
             // cantDaysMonth
-            let dias = cantDaysMonth(fecha.getMonth() + 1, fecha.getFullYear());
+            // let dias = cantDaysMonth(fecha.getMonth() + 1, fecha.getFullYear());
+            let dias = diasHabiles(fecha.getMonth() + 1, fecha.getFullYear());
             let data = [];
             await asyncForEach(dplan, async(item) => {
                 let d = {
@@ -167,14 +171,90 @@ module.exports = app => {
             return res.json({ data });
         },
         cumplimento: async(req, res) => {
-            let tipo = await Tipo.findById(req.params.tipo);
             let fecha = new Date();
+            let dias = diasHabiles(fecha.getMonth() + 1, fecha.getFullYear());
+            let tipo = await Tipo.findById(req.params.tipo);
+            let demData = await Demanda.find({ activo: true })
+                .populate('consejo_id', 'nombre');
 
-            let demData = await Demanda.find({ activo: true });
+            let data = [];
+            await asyncForEach(demData, async(item) => {
+                let res = {
+                    id: item.consejo_id._id,
+                    consejo: item.consejo_id.nombre,
+                    plan_ac: 0,
+                    real_ac: 0,
+                    perc_ac: 0,
+                    plan_dia: 0,
+                    real_dia: 0,
+                    plan_mes: 0,
+                    perc_dia: 0
+                }
+                let plan = 0;
+                let it = item.demandas;
+                for (let i = 0; i < it.length; i++)
+                    if (it[i].tipo_id == '' + tipo._id + '') {
+                        plan = it[i].demanda;
+                        break;
+                    }
+                plan = (tipo.nombre == 'Proteinas') ? parseFloat(plan) / 1000 : parseFloat(plan) / (2.1739 * 1000);
+                res.plan_mes = plan.toFixed(2);
+                res.plan_ac = ((parseFloat(plan) / dias) * fecha.getDate()).toFixed(2);
+                res.plan_dia = ((parseFloat(plan) / dias)).toFixed(2);
+
+                data.push(res);
+            })
+
+
+            fecha = fecha.getFullYear() + '-' + parseInt(fecha.getMonth() + 1) + '-' + parseInt(fecha.getDate() - 1)
+            let captDay = await Captador.find({
+                fechad: { $gte: fecha }
+            }).populate('comercializadora_id', ['nombre', 'consejo_id']);
+            await asyncForEach(captDay, async(capt) => {
+                    let con_id = capt.comercializadora_id.consejo_id;
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].id == '' + con_id + '') {
+                            let suma = 0;
+                            await asyncForEach(capt[tipo.nombre], async(c) => {
+                                suma += c.cant
+                            })
+                            suma = (tipo.nombre == 'Proteinas') ? parseFloat(suma) / 1000 : parseFloat(suma) / (2.1739 * 1000);
+                            data[i].real_dia += suma;
+                            break;
+                        }
+                    }
+                })
+                // let real = {};
+            fecha = new Date();
+            fecha = fecha.getFullYear() + '-' + parseInt(fecha.getMonth() + 1) + '-' + 1;
+            let captData = await Captador.find({
+                fechad: { $gte: fecha }
+            }).populate('comercializadora_id', ['nombre', 'consejo_id']);
+            await asyncForEach(captData, async(capt) => {
+                let con_id = capt.comercializadora_id.consejo_id;
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].id == '' + con_id + '') {
+                        let suma = 0;
+                        await asyncForEach(capt[tipo.nombre], async(c) => {
+                            suma += c.cant
+                        })
+                        suma = (tipo.nombre == 'Proteinas') ? parseFloat(suma) / 1000 : parseFloat(suma) / (2.1739 * 1000);
+                        data[i].real_ac += suma;
+                        break;
+                    }
+                }
+            })
+
+            await asyncForEach(data, async(item, i) => {
+                data[i].real_ac = parseFloat(item.real_ac).toFixed(2);
+                data[i].real_dia = parseFloat(item.real_dia).toFixed(2);
+                data[i].perc_ac = ((item.real_ac / item.plan_ac) * 100).toFixed(2);
+                data[i].perc_dia = ((item.real_dia / item.plan_dia) * 100).toFixed(2);
+            })
 
 
 
-            res.json({ tipo, fecha, data: demData })
+            res.json({ msg: 'success', data })
         }
     }
 
