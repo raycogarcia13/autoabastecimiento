@@ -73,6 +73,28 @@
             <v-list-item-title v-text="item.title"></v-list-item-title>
           </v-list-item>
         </v-list-group>
+      <v-list-group no-action v-if="admin">
+          <template v-slot:activator>
+            <v-list-item-action>
+              <v-icon>mdi-lock</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Administración</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item
+            v-for="(item) in admins"
+            :key="item.title"
+            link
+            :to="item.to"
+          >
+            <v-list-item-icon>
+              <v-icon v-text="item.icon"></v-icon>
+            </v-list-item-icon>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+          </v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
@@ -201,12 +223,27 @@ export default {
           title: 'Productos',
           to: '/querys'
         }
-        
+      ],
+      admins:[
+        {
+          icon: 'mdi-account-group',
+          title: 'Usuarios',
+          to: '/admin/usuarios',
+        }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
       title: 'Autoabastecimiento'
+    }
+  },
+  computed: {
+    rol(){
+      return this.$store.state.authUser.user.rol_id.rol;
+    },
+    admin(){
+      let rol = this.rol
+      return (rol != 'root' && rol != 'admin')?false:true;
     }
   },
   methods: {

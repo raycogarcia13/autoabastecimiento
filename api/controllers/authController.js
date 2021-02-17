@@ -17,7 +17,7 @@ module.exports = app => {
             let user = await User.findOne({ username: username }, (err, user) => {
                 if (err)
                     return res.status(401).json({ message: 'Usuario incorrecto', error: err })
-            });
+            }).populate('rol_id', ['rol', 'rolename']);
 
             if (user) {
                 if (!bcrypt.compareSync(password, user.password))

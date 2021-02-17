@@ -50,7 +50,21 @@ module.exports = {
         })
     },
     //middlewares para verificacion de permisos
-    requireAdmin: (req, res, next) => {},
+    requireAdmin: (req, res, next) => {
+        const Token = mongoose.model('Token')
+        var token = req.headers.authorization
+        let tkn = token.replace(/^Bearer\s/, '');
+        jwt.verify(tkn, config.JWT_SECRET, function(err, decoded) {
+            if (err) {
+                return res.status(401).json({ message: 'unauthorized' })
+            } else {
+                if (decoded.user.rol_id.rol == 'root' || decoded.user.rol_id.rol == 'admin')
+                    return next();
+                else
+                    return res.status(401).json({ message: 'unauthorized' })
+            }
+        });
+    },
     requireRoot: (req, res, next) => {},
     requireStore: (req, res, next) => {}
 }
