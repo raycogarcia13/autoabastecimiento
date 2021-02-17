@@ -7,9 +7,8 @@ module.exports = app => {
 
     const Data = new Schema({
         fecha: {
-            dia: { type: Number, required: true, default: new Date().getDate() + 1 },
             mes: { type: Number, required: true, default: new Date().getMonth() + 1 },
-            anno: { type: Number, required: true, default: new Date().getFullYear() },
+            anno: { type: Number, required: true, default: new Date().getFullYear() }
         },
         fechad: { type: Date, required: true, default: Date.now() },
         producciones: [{
