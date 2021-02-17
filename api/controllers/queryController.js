@@ -160,14 +160,50 @@ module.exports = app => {
 
             await asyncForEach(data, async(item, i) => {
                 await asyncForEach(tipos, async(tip) => {
-                    if (tip.nombre == 'Proteinas')
-                        data[i][tip.nombre] = (parseFloat(item[tip.nombre] / 1000)).toFixed(2);
-                    else
-                        data[i][tip.nombre] = (parseFloat(item[tip.nombre] / (2.1739 * 1000))).toFixed(2);
+                    // if (tip.nombre == 'Proteinas')
+                    data[i][tip.nombre] = (parseFloat(item[tip.nombre] / 1000)).toFixed(2);
+                    // else
+                    // data[i][tip.nombre] = (parseFloat(item[tip.nombre] / (2.1739 * 1000))).toFixed(2);
                 });
             });
 
-            res.json({ msg: "success", data: data, fecha: new Date(fecha) })
+            let demData = await Demanda.find({ activo: true })
+                .populate('demandas.tipo_id', 'nombre')
+                .populate('consejo_id', 'nombre');
+
+            await asyncForEach(data, async(item, i) => {
+                for (let j = 0; j < demData.length; j++) {
+                    if (item.nombre == demData[j].consejo_id.nombre) {
+                        await asyncForEach(demData[j].demandas, async(dem) => {
+
+                            let plan = 0;
+                            if (dem.tipo_id.nombre == 'Proteinas')
+                                plan = (parseFloat(dem.demanda / 1000)).toFixed(2);
+                            else
+                                plan = (parseFloat(dem.demanda / (2.1739 * 1000))).toFixed(2);
+
+                            data[i]['plan_' + dem.tipo_id.nombre] = plan;
+                            data[i]['indice_' + dem.tipo_id.nombre] = dem.indice;
+                        })
+                    }
+                }
+            })
+
+            let final = [];
+            await asyncForEach(data, item => {
+                let tmp = {
+                    nombre: item.nombre,
+                    Viandas: ((parseFloat(item.Viandas) * item.indice_Viandas) / parseFloat(item.plan_Viandas)).toFixed(2),
+                    Hortalizas: ((parseFloat(item.Hortalizas) * item.indice_Hortalizas) / parseFloat(item.plan_Hortalizas)).toFixed(2),
+                    Granos: ((parseFloat(item.Granos) * item.indice_Hortalizas) / parseFloat(item.plan_Hortalizas)).toFixed(2),
+                    Frutales: ((parseFloat(item.Frutales) * item.indice_Hortalizas) / parseFloat(item.plan_Hortalizas)).toFixed(2),
+                    Proteinas: ((parseFloat(item.Proteinas) * item.indice_Hortalizas) / parseFloat(item.plan_Hortalizas)).toFixed(2),
+                }
+                final.push(tmp);
+            })
+
+            // res.json({ msg: "success", data: data, fecha: new Date(fecha) })
+            res.json({ msg: "success", data: final, fecha: new Date(fecha) })
             return res.json({ data });
         },
         cumplimento: async(req, res) => {

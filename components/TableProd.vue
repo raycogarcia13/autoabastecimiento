@@ -29,6 +29,7 @@
                   ref="form"
                   v-model="valid"
                   lazy-validation
+                  @submit.prevent=""
                 >
                   <div class="mt-4 title">
                   Editar venta de este producto

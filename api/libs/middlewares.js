@@ -35,7 +35,6 @@ module.exports = {
     },
     // middleware para los mensajes de errores de validación
     validate: (req, res, next) => {
-        // return next();
         const errors = validationResult(req)
         if (errors.isEmpty()) {
             return next()
@@ -65,6 +64,34 @@ module.exports = {
             }
         });
     },
-    requireRoot: (req, res, next) => {},
-    requireStore: (req, res, next) => {}
+    requireRoot: (req, res, next) => {
+        const Token = mongoose.model('Token')
+        var token = req.headers.authorization
+        let tkn = token.replace(/^Bearer\s/, '');
+        jwt.verify(tkn, config.JWT_SECRET, function(err, decoded) {
+            if (err) {
+                return res.status(401).json({ message: 'unauthorized' })
+            } else {
+                if (decoded.user.rol_id.rol == 'root')
+                    return next();
+                else
+                    return res.status(401).json({ message: 'unauthorized' })
+            }
+        });
+    },
+    requireUser: (req, res, next) => {
+        const Token = mongoose.model('Token')
+        var token = req.headers.authorization
+        let tkn = token.replace(/^Bearer\s/, '');
+        jwt.verify(tkn, config.JWT_SECRET, function(err, decoded) {
+            if (err) {
+                return res.status(401).json({ message: 'unauthorized' })
+            } else {
+                if (decoded.user.rol_id.rol == 'root' || decoded.user.rol_id.rol == 'admin' || decoded.user.rol_id.rol == 'user')
+                    return next();
+                else
+                    return res.status(401).json({ message: 'unauthorized' })
+            }
+        });
+    }
 }

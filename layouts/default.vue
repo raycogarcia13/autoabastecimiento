@@ -174,6 +174,11 @@ export default {
           to: '/captador'
         },
         {
+          icon: 'mdi-chart-line',
+          title: 'Producción',
+          to: '/produccion'
+        },
+        {
           icon: 'mdi-map',
           title: 'Mapa',
           to: '/mapa'

@@ -1,7 +1,7 @@
 <template>
   <div>
         <v-app-bar color="white" elevation="0" class="text-h4 mb-5">
-            Acomulado del mes (t)
+            Acumulado del mes (t)
             <v-spacer></v-spacer>
             <b>Fecha:&nbsp;</b>{{fecha.getMonth()+1}}/{{fecha.getFullYear()}}
         </v-app-bar>

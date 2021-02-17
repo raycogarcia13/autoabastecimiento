@@ -5,13 +5,16 @@ const config = require('../config/config')
 
 module.exports = app => {
     const User = mongoose.model('User')
+    const Rol = mongoose.model('Rol')
     const Token = mongoose.model('Token')
     return {
         register: (req, res) => {
             var user = new User({
-                name: req.body.name,
+                username: req.body.username,
+                password: req.body.password,
                 email: req.body.email,
-                password: req.body.password
+                name: req.body.name,
+                rol_id: req.body.rol
             })
 
             var salt = bcrypt.genSaltSync(10);
@@ -33,14 +36,11 @@ module.exports = app => {
                 })
             })
         },
-        getAll: (req, res) => {
-            User.find({}, function(err, data) {
-                if (err) {
-                    return res.status(500).json({ message: 'Error getting records', test: err })
-                }
+        getAll: async(req, res) => {
+            let user = await User.find()
+                .populate('rol_id', ['rol', 'rolename']);
 
-                return res.json(data);
-            })
+            return res.json(user);
         },
         findOne: (req, res) => {
             let id = req.params.id;
@@ -51,6 +51,29 @@ module.exports = app => {
 
                 return res.json(user);
             })
+        },
+        getRoles: async(req, res) => {
+            let roles = await Rol.find();
+
+            return res.json(roles)
+        },
+        edit: async(req, res) => {
+            let user = {
+                email: req.body.email,
+                name: req.body.name,
+                rol_id: req.body.rol
+            }
+            let pass = req.body.password ? req.body.password : ''
+            if (pass.length) {
+                console.log(pass);
+                var salt = bcrypt.genSaltSync(10);
+                var hash = bcrypt.hashSync(pass, salt);
+                user.password = hash;
+            }
+            let id = req.body.id
+            await User.findOneAndUpdate({ _id: id }, user);
+
+            return res.json({ status: "success" })
         }
     }
 
