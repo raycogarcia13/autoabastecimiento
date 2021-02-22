@@ -119,8 +119,6 @@ export default {
        menu:false,
        fecha: moment().toISOString().substr(0,10),
        maxDate: moment().toISOString().substr(0,10),
-      //  fecha: new Date().toISOString().substr(0, 10),
-
     }
   },
   computed: {

@@ -7,4 +7,8 @@ module.exports = app => {
 
     app.post('/captador', app.controllers.captadorController.index);
     app.put('/captador', captadorValidationRules(), middlewares.validate, app.controllers.captadorController.store);
+    app.put('/captador', captadorValidationRules(), middlewares.validate, app.controllers.captadorController.store);
+
+    app.post('/nocaptan', app.controllers.captadorController.noCaptan);
+
 }

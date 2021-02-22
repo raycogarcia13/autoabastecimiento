@@ -86,27 +86,21 @@
 
             <v-card>
               <v-card-title>Puntos que no han comercializado</v-card-title>
-              <v-card-text>
-                <v-list three-line>
-                    <template v-for="(item, index) in items">
-                      <v-divider
-                        v-if="item.divider"
-                        :key="index"
-                        :inset="item.inset"
-                      ></v-divider>
-
-                      <v-list-item
-                        v-else
-                        :key="item.title"
-                      >
-                        <v-list-item-content>
-                          <v-list-item-title v-html="item.title"></v-list-item-title>
-                          <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </template>
-                  </v-list>
-              </v-card-text>
+              <v-card-title>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-card-title>
+              <v-data-table
+                :headers="headers"
+                :items="items"
+                :search="search"
+                :items-per-page="5"
+              ></v-data-table>
             </v-card>
 
         </v-col>
@@ -117,37 +111,20 @@
 
 <script>
 import {cantDaysMonth} from "@/api/libs/dates"
+import moment from 'moment'
 export default {
   data() {
     return {
        anno:false,
-       items: [
-        {
-          title: 'Brunch this weekend?',
-          subtitle: `<span class="text--primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-        },
-        { divider: true, inset: true },
-        {
-          title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-          subtitle: `<span class="text--primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`,
-        },
-        { divider: true, inset: true },
-        {
-          title: 'Oui oui',
-          subtitle: '<span class="text--primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
-        },
-        { divider: true, inset: true },
-        {
-          title: 'Birthday gift',
-          subtitle: '<span class="text--primary">Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?',
-        },
-        { divider: true, inset: true },
-        {
-          title: 'Recipe to try',
-          subtitle: '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-        },
-      ],
-      plan_real_mes:null
+       items: [],
+      plan_real_mes:null,
+      search:"",
+      fecha: moment().toISOString().substr(0,10),
+      headers:[
+        { text: 'Punto', align: 'start', value: 'nombre'},
+        { text: 'Consejo', align: 'start', value: 'consejo_id.nombre'},
+        { text: 'Base', align: 'start', value: 'basep_id.nombre'},
+      ]
     }
   },
   computed: {
@@ -189,6 +166,7 @@ export default {
     }
   },
   methods: {
+    
     loadPlanReal()
     {
       let uri = '/api/home/plan_real';
@@ -197,9 +175,17 @@ export default {
         console.log(this.plan_real_mes);
       })
     },
+    loadNoComer(){
+      let uri = '/api/nocaptan';
+      this.$axios.post(uri,{fecha:this.fecha}).then(res=>{
+        this.items = res.data.all;
+        console.log(this.items);
+      })
+    },
     loadData()
     {
       this.loadPlanReal();
+      this.loadNoComer();
     }
   },
   mounted() {

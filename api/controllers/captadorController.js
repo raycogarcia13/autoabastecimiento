@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
+const asyncForEach = require('../libs/asyncForEach');
 module.exports = app => {
     const Productos = mongoose.model('Cultivos');
     const Tipos = mongoose.model('Tipo');
     const Captador = mongoose.model('Captador');
+    const Puntos = mongoose.model('Comercializadora');
 
     return {
         index: async(req, res) => {
@@ -53,10 +55,6 @@ module.exports = app => {
                 });
             }
 
-            // return res.json({ fecha: dia, mes: mes, anno: anno })
-
-
-            // return res.json({ status: 'success', data: datas });
             return res.json({ status: 'success', data: all });
         },
         store: async(req, res) => {
@@ -109,6 +107,29 @@ module.exports = app => {
             data.save();
             return res.json({ status: "success", data: data });
 
+        },
+
+        noCaptan: async(req, res) => {
+
+            let fecha = new Date(Date.parse(req.body.fecha));
+            let dia = fecha.getDate() + 1;
+            let mes = fecha.getMonth() + 1;
+            let anno = fecha.getFullYear();
+            fecha = { dia, mes, anno }
+
+            let all = await Puntos.find()
+                .populate('consejo_id', 'nombre')
+                .populate('basep_id', 'nombre');
+            let datas = await Captador.find({ fecha });
+
+            await asyncForEach(all, async(item, i) => {
+                let exist = datas.find(comr => comr.comercializadora_id == '' + item._id + '');
+                if (exist) {
+                    all.splice(i, 1);
+                }
+            })
+
+            return res.json({ count: all.length, all });
         }
     }
 
