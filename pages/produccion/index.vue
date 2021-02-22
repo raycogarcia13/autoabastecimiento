@@ -84,14 +84,14 @@
                 hide-details
             ></v-text-field>
         </template>
-          <template v-slot:item.producto="{ item }">
-            <span v-if="item.id">
-              {{ item.producto }}
-            </span>
-            <span v-else>
-              <b>{{ item.producto }}</b>
-            </span>
-          </template>
+        <template v-slot:item.producto="{ item }">
+          <span v-if="item.id">
+            {{ item.producto }}
+          </span>
+          <span v-else>
+            <b>{{ item.producto }}</b>
+          </span>
+        </template>
         <template v-slot:item.siembra="props">
             <v-edit-dialog v-if="props.item.id"
             :return-value.sync="props.item.siembra"
@@ -109,7 +109,7 @@
                   @submit.prevent=""
                 >
                   <div class="mt-4 title">
-                  Editar producción este producto
+                  Editar producción de {{props.item.producto}}
                   </div>
                   <v-text-field
                   v-model="props.item.siembra"
@@ -124,6 +124,39 @@
             </template>
             </v-edit-dialog>
             <span v-else><b>{{props.item.siembra}}</b></span>
+        </template>
+        <template v-slot:item.ratificado="props">
+            <v-edit-dialog v-if="props.item.id"
+            :return-value.sync="props.item.ratificado"
+            large
+            persistent
+            @save="save(props.item)"
+            @close="close"
+            >
+            <div>{{ props.item.ratificado }}</div>
+            <template v-slot:input>
+               <v-form
+                  ref="form"
+                  v-model="valid"
+                  lazy-validation
+                  @submit.prevent=""
+                >
+                  <div class="mt-4 title">
+                  Editar ratificado de {{props.item.producto}}
+                  </div>
+                  <v-text-field
+                  v-model="props.item.ratificado"
+                  :rules="[max25chars]"
+                  label="Cantidad Vendida"
+                  single-line
+                  counter
+                  autofocus
+                  v-on:keyup.enter="save(props.item)"
+                  ></v-text-field>
+               </v-form>
+            </template>
+            </v-edit-dialog>
+            <span v-else><b>{{props.item.ratificado}}</b></span>
         </template>
         </v-data-table>
       </v-col>
@@ -184,14 +217,13 @@ export default {
       this.items.forEach((item)=>{
           data.push({
             producto:'Total '+item.nombre,
-            siembra:item.total_prod,
-            ratificado:item.total_rat,
+            siembra:item.producciones.reduce((ac,curr)=>ac+=parseFloat(curr.siembra),0),
+            ratificado:item.producciones.reduce((ac,curr)=>ac+=parseFloat(curr.ratificado),0),
           });
           item.producciones.forEach(async(prod)=>{
               data.push(prod);
           })
       })
-      console.log(data);
       return data;
     }
   },
@@ -210,7 +242,9 @@ export default {
          this.cargando = false
         }
         else{
-          alert(res.data.msg)
+           this.snack = true
+            this.snackColor = 'danger'
+            this.snackText = res.data.msg;
         }
        })
     },
@@ -218,25 +252,27 @@ export default {
       this.loadData();
     },
      save (item) {
-        // if(this.$refs.form.validate())
-        // {
-        //   let uri = '/api/captador';
-        //   item['date'] =this.fecha;
-        //   item['unidad'] =this.unidad._id;
-        //   item.cant = Number.parseFloat(item.cant);
-        //   this.$axios.put(uri,item).then(res=>{
-        //     this.snack = true
-        //     this.snackColor = 'success'
-        //     this.snackText = 'Información guardada correctamente';
-        //   })
-        // }else
-        // {
-        //     this.$refs.form.reset()
-        //     this.$refs.form.resetValidation()
-        //     this.snack = true
-        //     this.snackColor = 'danger'
-        //     this.snackText = 'Tiene errores en le formulario';
-        // }
+        if(this.$refs.form.validate())
+        {
+          console.log(item);
+          let f = this.fecha.split('-');
+          item['mes'] = f[1];
+          item['anno'] = f[0];
+          let uri = '/api/produccion';
+          this.$axios.put(uri,item).then(res=>{
+            this.snack = true
+            this.snackColor = 'success'
+            this.snackText = 'Información guardada correctamente';
+          })
+        }
+        else
+        {
+            this.$refs.form.reset()
+            this.$refs.form.resetValidation()
+            this.snack = true
+            this.snackColor = 'danger'
+            this.snackText = 'Tiene errores en le formulario';
+        }
 
       },
       cancel () {

@@ -1,13 +1,7 @@
-// const { unidadValidationRules } = require('../validations/unidades')
+const { produccionValidationRules, } = require('../validations/produccion')
+const middlewares = require('../libs/middlewares')
 
 module.exports = app => {
-
-    // app.route('/produccion')
-    // .post(unidadValidationRules(), app.controllers.unidadController.store)
-    // .get(app.controllers.produccionController.index);
-
+    app.put('/produccion', produccionValidationRules(), middlewares.validate, app.controllers.produccionController.store);
     app.get('/produccion/:anno/:mes', app.controllers.produccionController.index);
-    // app.get('/unidades/:id', app.controllers.unidadController.show);
-    // app.get('/unidades_geometry/:id', app.controllers.unidadController.geojson);
-    // app.delete('/states/:id', app.controllers.Social.stateController.delete)
 }

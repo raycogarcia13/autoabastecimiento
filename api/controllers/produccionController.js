@@ -9,11 +9,11 @@ module.exports = app => {
     return {
         index: async(req, res) => {
 
-            let mes = req.params.mes;
-            let anno = req.params.anno;
+            let mes = parseInt(req.params.mes);
+            let anno = parseInt(req.params.anno);
             let fecha = { mes, anno }
 
-            let datas = await Produccion.find({ fecha });
+            let datas = await Produccion.findOne({ fecha });
             let tipos = await Tipos.find();
 
             let all = [];
@@ -34,7 +34,11 @@ module.exports = app => {
                         siembra: 0,
                         ratificado: 0
                     }
-                    let pdia = await datas.find(it => it.producto_id == '' + producto._id + '');
+
+                    let pdia = null;
+                    if (datas)
+                        pdia = await datas.producciones.find(it => it.producto_id == '' + producto._id + '');
+
                     if (pdia) {
                         prod.siembra = pdia.siembra;
                         prod.ratificado = pdia.ratificado;
@@ -49,6 +53,59 @@ module.exports = app => {
 
             return res.json({ status: 'success', data: all, fecha });
         },
+
+        store: async(req, res) => {
+
+            let mes = parseInt(req.body.mes);
+            let anno = parseInt(req.body.anno);
+            let fecha = { mes, anno }
+            let id = req.body.id;
+            let siembra = req.body.siembra;
+            let ratificado = req.body.ratificado;
+
+            let data = await Produccion.findOne({ fecha });
+
+            if (data) {
+                let find = false;
+                await asyncForEach(data.producciones, async(item, i) => {
+                    if (item.producto_id == '' + id + '') {
+                        find = true;
+                        data.producciones[i].siembra = parseFloat(siembra);
+                        data.producciones[i].ratificado = parseFloat(ratificado);
+                        data.save();
+                    }
+                })
+                if (!find) {
+                    data.producciones.push({
+                        producto_id: id,
+                        siembra: siembra ? siembra : 0,
+                        ratificado: ratificado ? ratificado : 0
+                    })
+
+                    data.save();
+                }
+
+                return res.json(data)
+
+            } else {
+                let prod = Produccion({
+                    fecha,
+                    fechad: (new Date(anno + '/' + mes + '/1')),
+                    producciones: []
+                });
+
+                prod.producciones.push({
+                    producto_id: id,
+                    siembra: siembra ? siembra : 0,
+                    ratificado: ratificado ? ratificado : 0
+                })
+
+                prod.save();
+
+                return res.json(prod)
+            }
+
+        }
 
     }
 

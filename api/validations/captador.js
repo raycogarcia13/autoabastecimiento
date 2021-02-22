@@ -1,5 +1,4 @@
 const { body } = require('express-validator')
-const mongoose = require('mongoose');
 
 const captadorValidationRules = () => {
     return [
