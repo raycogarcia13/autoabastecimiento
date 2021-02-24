@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 const asyncForEach = require('../libs/asyncForEach');
 module.exports = app => {
     const Productos = mongoose.model('Cultivos');

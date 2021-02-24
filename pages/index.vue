@@ -5,44 +5,24 @@
         <v-col cols="12" md="6">
           <v-row>
             <v-col>
-              <v-card>
-                <v-card-title>Cumplimiento del día</v-card-title>
-                <v-card-text class="text-center">
-                    <v-progress-circular
-                      :size="100"
-                      :width="15"
-                      :value="36"
-                      color="teal"
-                    >
-                     36
-                    </v-progress-circular>
-                </v-card-text>
-                <v-card-actions>
-                  <b>Plan:&nbsp;</b> 58
-                  <v-spacer></v-spacer>
-                  <b>Real:&nbsp;</b> 58
-                </v-card-actions>
-              </v-card>
-            </v-col>
-            <v-col>
-              <v-card>
-                <v-card-title>Cumplimiento del mes</v-card-title>
-                <v-card-text class="text-center">
-                    <v-progress-circular
-                      :size="100"
-                      :width="15"
-                      :value="valueMes.percent"
-                      color="red"
-                    >
-                     {{valueMes.percent}}
-                    </v-progress-circular>
-                </v-card-text>
-                <v-card-actions>
-                  <b>Plan:&nbsp;</b> {{valueMes.plan}} t
-                  <v-spacer></v-spacer>
-                  <b>Real:&nbsp;</b> {{valueMes.real}} t
-              </v-card-actions>
-              </v-card>
+                <v-card>
+                  <v-card-subtitle class="black--text">Cumplimiento libras per cápita Día</v-card-subtitle>
+                  <v-card-text>
+                    <v-row class="justify-center">
+                      <v-col class="text-center green--text" v-for="item in librasD" :key="item.id">
+                          <v-progress-circular
+                            :size="70"
+                            :width="15"
+                            :value="(item.total/item.demanda*100).toFixed(2)"
+                            :color="item.color"
+                          >
+                          {{(item.total/item.demanda*100).toFixed(1)}}%
+                          </v-progress-circular>
+                          {{item.tipo}}
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
             </v-col>
           </v-row>
           <v-row>
@@ -54,6 +34,7 @@
                     <v-switch
                       v-model="anno"
                       :label="`${(anno)?'Año':'Mes'}`"
+                      @change="loadTendencia()"
                     ></v-switch>
                 </v-card-title>
                 <v-card-subtitle></v-card-subtitle>
@@ -69,20 +50,8 @@
               </v-card>
             </v-col>
           </v-row>
-        </v-col>
-        <v-col cols="12" md="6">
-            <v-row>
-              <v-col>
-                <Cuadro title="Hoy" icon="mdi-calendar" color="success" descr="Comercializado hoy" value="78 kg"/>
-              </v-col>
-              <v-col>
-                <Cuadro title="Mes" icon="mdi-calendar-month" color="primary" descr="Comercializado hoy" value="78 kg"/>
-              </v-col>
-              <v-col>
-                <Cuadro title="Hoy" icon="mdi-cogs" color="red" descr="Comercializado hoy" value="78 kg"/>
-              </v-col>
-            </v-row>
-            <v-divider class="mt-5"></v-divider>
+
+           <v-divider class="mt-5"></v-divider>
 
             <v-card>
               <v-card-title>Puntos que no han comercializado</v-card-title>
@@ -102,7 +71,59 @@
                 :items-per-page="5"
               ></v-data-table>
             </v-card>
+        </v-col>
+        <v-col cols="12" md="6">
+            <v-row>
+              <v-col>
+                <v-card>
+                  <v-card-subtitle class="black--text">Cumplimiento libras per cápita Mes</v-card-subtitle>
+                  <v-card-text>
+                    <v-row class="justify-center">
+                       <v-col class="text-center green--text" v-for="item in librasM" :key="item.id">
+                          <v-progress-circular
+                            :size="70"
+                            :width="15"
+                            :value="(item.total/item.demanda*100).toFixed(2)"
+                            :color="item.color"
+                          >
+                          {{(item.total/item.demanda*100).toFixed(1)}}%
+                          </v-progress-circular>
+                          {{item.tipo}}
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <CuadroTable icon="mdi-calendar" color="success" descr="Comercializado hoy" :values="librasD"/>
+              </v-col>
+              <v-col cols="12" md="6">
+                <CuadroTable icon="mdi-calendar-month" color="primary" descr="Comercializado mes" :values="librasM"/>
+              </v-col>
+            </v-row>
 
+             <v-divider class="mt-5"></v-divider>
+
+            <v-card>
+              <v-card-title>Últimos accesos</v-card-title>
+              <v-card-title>
+                <v-text-field
+                  v-model="search2"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-card-title>
+              <v-data-table
+                :headers="headersAcces"
+                :items="accesos"
+                :search="search2"
+                :items-per-page="5"
+              ></v-data-table>
+            </v-card>
         </v-col>
       </v-row>
     </v-responsive>
@@ -119,34 +140,38 @@ export default {
        items: [],
       plan_real_mes:null,
       search:"",
+      search2:"",
       fecha: moment().toISOString().substr(0,10),
       headers:[
         { text: 'Punto', align: 'start', value: 'nombre'},
         { text: 'Consejo', align: 'start', value: 'consejo_id.nombre'},
         { text: 'Base', align: 'start', value: 'basep_id.nombre'},
-      ]
+      ],
+      headersAcces:[
+        { text: 'Usuario', align: 'start', value: '_id'},
+        { text: 'Fecha', align: 'start', value: 'fecha[0]'},
+      ],
+      accesos:[],
+      librasM:[],
+      librasD:[],
+      tendencia:[]
     }
   },
   computed: {
     labels(){
-      let labl=[];
-      if(!this.anno)
-      {
-        for(let i=1;i<cantDaysMonth(8,2021)+1;i++)
-          labl.push(i);
-      }
+     let val=[];
+        this.tendencia.forEach(item=>{
+          val.push(item.label);
+        })
 
-      return labl;
+      return val;
     },
 
     value(){
        let val=[];
-      if(!this.anno)
-      {
-        for(let i=1;i<Math.ceil(Math.random() * (31 - 1) + 1);i++)
-          val.push( Math.ceil(Math.random() * (1000 - 1) + 1));
-      }
-
+        this.tendencia.forEach(item=>{
+          val.push(item.value);
+        })
       return val;
     },
     valueMes()
@@ -167,25 +192,47 @@ export default {
   },
   methods: {
     
-    loadPlanReal()
+    loadLibrasMes()
     {
-      let uri = '/api/home/plan_real';
-      this.$axios.post(uri,{limit:'mes'}).then(res=>{
-        this.plan_real_mes = res.data;
-        console.log(this.plan_real_mes);
+      let uri = '/api/home/libras/mes';
+      this.$axios.get(uri).then(res=>{
+        this.librasM = res.data.data;
+      })
+    },
+    loadLibrasDay()
+    {
+      let uri = '/api/home/libras/day';
+      this.$axios.get(uri).then(res=>{
+        this.librasD = res.data.data;
       })
     },
     loadNoComer(){
       let uri = '/api/nocaptan';
       this.$axios.post(uri,{fecha:this.fecha}).then(res=>{
         this.items = res.data.all;
-        console.log(this.items);
+      })
+    },
+    loadAudit(){
+      let uri = '/api/home/audit';
+      this.$axios.get(uri,).then(res=>{
+        this.accesos = res.data;
       })
     },
     loadData()
     {
-      this.loadPlanReal();
+      this.loadLibrasMes();
+      this.loadLibrasDay();
       this.loadNoComer();
+      this.loadAudit();
+      this.loadTendencia();
+    },
+    loadTendencia()
+    {
+      let limit = this.anno?'year':'mes';
+      let uri = '/api/home/tendencia/'+limit;
+        this.$axios.get(uri,).then(res=>{
+        this.tendencia = res.data.data;
+      })
     }
   },
   mounted() {

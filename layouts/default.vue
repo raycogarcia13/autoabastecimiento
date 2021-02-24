@@ -221,12 +221,12 @@ export default {
         {
           icon: 'mdi-table',
           title: 'Comercializadoras',
-          to: '/querys'
+          to: '/config/puntos'
         },
         {
           icon: 'mdi-table',
           title: 'Productos',
-          to: '/querys'
+          to: '/config/productos'
         }
       ],
       admins:[

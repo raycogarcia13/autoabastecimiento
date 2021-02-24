@@ -58,7 +58,7 @@ export default {
     methods: {
       loadData()
       {
-        let uri = '/api/unidades_geometry/'+this.$route.params.id;
+        let uri = '/api/puntos_geometry/'+this.$route.params.id;
         this.$axios.get(uri).then(res=>{
           this.geojson = res.data;
           this.$refs.map.fitBounds(L.geoJSON(this.geojson).getBounds())

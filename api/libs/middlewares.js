@@ -8,6 +8,7 @@ module.exports = {
     //verificar token en las rutas q no esten definidas
     verifyToken: (req, res, next) => {
         const Token = mongoose.model('Token')
+        const Audit = mongoose.model('Audit')
         if (passRoute.find(el => el === req.url)) {
             next();
         } else {
@@ -24,6 +25,12 @@ module.exports = {
                             if (data.length == 0)
                                 return res.status(401).json({ message: 'token expired' })
 
+                            Audit({
+                                request: JSON.stringify({ body: req.body, params: req.params }),
+                                url: req.url,
+                                username: decoded.user.username,
+                                user_id: decoded.user._id
+                            }).save();
                             return next();
                         })
                     }

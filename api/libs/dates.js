@@ -8,6 +8,21 @@ let dias = [
     'Sábado',
 ];
 
+let meses = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre'
+];
+
 let dayIsCount = (dt) => {
     let fecha = new Date(dt);
     let d = fecha.getDay();
@@ -63,6 +78,9 @@ module.exports = {
             cant += dayIsCount(date);
         }
         return cant;
+    },
+    getMes: (mes) => {
+        return meses[mes];
     }
 
 }
