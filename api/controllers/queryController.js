@@ -203,8 +203,7 @@ module.exports = app => {
             })
 
             // res.json({ msg: "success", data: data, fecha: new Date(fecha) })
-            res.json({ msg: "success", data: final, fecha: new Date(fecha) })
-            return res.json({ data });
+            return res.json({ msg: "success", data: final, fecha: new Date(fecha) })
         },
         cumplimento: async(req, res) => {
             let fecha = new Date();
