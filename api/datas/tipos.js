@@ -1,0 +1,103 @@
+ let tipos = [{
+     "tipo": "Viandas",
+     "cant": 15,
+     "item": [
+         "Yuca",
+         "Boniato",
+         "Malanga",
+         "Plátano Fruta",
+         "Plátano Burro",
+         "Plátano Macho",
+         "Ñame",
+         "Papa",
+         "Caldocín",
+         "Fruta del Pan",
+         "Otras Viandas"
+     ]
+ }, {
+     "tipo": "Hortalizas",
+     "cant": 10,
+     "item": [
+         "Acelga",
+         "Ají Cachucha",
+         "Ají Chay",
+         "Ajo",
+         "Ajo Puerro",
+         "Apio",
+         "Berenjena",
+         "Calabaza",
+         "Cebolla",
+         "Cebolla Multiplicadora",
+         "Cebollino",
+         "Col",
+         "Col China",
+         "Col King",
+         "Culantro",
+         "Espinaca",
+         "Habichuela",
+         "Lechuga",
+         "Moringa",
+         "Oreganito",
+         "Orégano",
+         "Perejil",
+         "Quimbombó",
+         "Rábano",
+         "Remolacha",
+         "Zanahoria",
+         "Melón",
+         "Pepino",
+         "Pimiento",
+         "Tomate",
+         "Otras Hortalizas",
+     ]
+ }, {
+     "tipo": "Frutales",
+     "cant": 3,
+     "item": [
+         "Fruta Bomba",
+         "Guayaba",
+         "Mango",
+         "Piña",
+         "Limón",
+         "Toronja",
+         "Naranja",
+         "Aguacate",
+         "Mamey",
+         "Anón",
+         "Caranbola",
+         "Ciruela",
+         "Anoncillo",
+         "Tamarindo",
+         "Otros Frutales",
+     ]
+ }, {
+     "tipo": "Granos",
+     "cant": 2,
+     "item": [
+         "Arroz Consumo",
+         "Fríjol Blanco",
+         "Fríjol Colorado",
+         "Fríjol Negro",
+         "Otros Fríjoles",
+         "Maíz seco en grano",
+         "Maíz tierno",
+         "Garbanzo",
+         "Maní",
+         "Otros Granos",
+     ]
+ }, {
+     "tipo": "Proteinas",
+     "cant": 5,
+     "item": [
+         "Carne de cerdo",
+         "Carne de conejo",
+         "Carne de ovino",
+         "Carne de caprino",
+         "Peces",
+         "Carnes de aves",
+         "Huevos de aves",
+         "Otras proteínas",
+     ]
+ }];
+
+ module.exports = tipos;
