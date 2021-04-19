@@ -51,7 +51,7 @@ export default {
                [21.9016376414, -82.8096053901]
          ],
       center:[],
-          url: 'http://raster.enpa.iju.minag.cu/osm/{z}/{x}/{y}.jpg',
+        url: 'http://agroisla.enpa.iju.minag.cu/resources/mapas/mapas/osm/{z}/{x}/{y}.jpg',
          attribution:
          '&copy; <a mailto="geomatica@enpa.iju.minag.cu">Enpa IJ</a>',
     }),
