@@ -27,6 +27,99 @@
                 hide-details
             ></v-text-field>
             <v-spacer></v-spacer>
+            <v-dialog
+              v-model="dialog"
+              max-width="500px"
+            >
+              <v-card>
+                <v-card-title>
+                  <span class="headline">{{ formTitle }}</span>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        cols="12"
+                      >
+                        <v-text-field
+                          v-model="editedItem.nombre"
+                          label="Nombre"
+                        ></v-text-field>
+
+                        <v-autocomplete
+                            v-model="editedItem.basep_id"
+                            :items="unidades"
+                            item-text="nombre"
+                            item-value="_id"
+                            chips
+                            small-chips
+                            label="Unidad Productiva"
+                          ></v-autocomplete>
+
+                      </v-col>
+                      <v-col
+                        cols="12"
+                      >
+                        <v-autocomplete
+                            v-model="editedItem.consejo_id"
+                            :items="consejos"
+                            item-text="nombre"
+                            item-value="_id"
+                            chips
+                            small-chips
+                            label="Consejo Popular"
+                          ></v-autocomplete>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                      >
+                        <!-- <client-only> -->
+                          <l-map ref="map" :zoom="13"
+                                  :bounds="bounds" 
+                                  :minZoom="7"
+                                  :maxZoom="17"
+                                  @click="addMarker"
+                                  style="height: 50vh; width: 100%; z-index:1"
+                          >
+                            <l-tile-layer
+                                        :url="url"
+                                        :attribution="attribution"
+                                        layer-type="base"
+                                        name="Ráster" />
+                            <l-marker :lat-lng="marker"></l-marker>
+                          </l-map>
+                        <!-- </client-only> -->
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="green darken-1"
+                    text
+                    @click="close"
+                  >
+                    Cancelar
+                  </v-btn>
+                  <v-btn
+                    color="green darken-1"
+                    text
+                    @click="save"
+                  >
+                    Guardar
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-tooltip left>
+               <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="secundary" @click="newItem()" v-bind="attrs" v-on="on" fab small><v-icon>mdi-plus</v-icon></v-btn>
+               </template>
+               <span>Agregar Producto</span>
+            </v-tooltip>
           </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
@@ -76,6 +169,8 @@
 export default {
   data: () => ({
       dialog: false,
+      unidades:[],
+      consejos:[],
       snack:{
         active: false,
         text: '',
@@ -97,17 +192,44 @@ export default {
       editedIndex: -1,
       editedItem: {
         nombre: '',
-        habitantes: 0
+        basep_id: {
+          _id:'',
+          nombre:''
+        },
+        consejo_id: {
+          nombre:'',
+          _id:''
+        },
+        geometry:[]
       },
       defaultItem: {
         nombre: '',
-        habitantes: 0
+        basep_id: {
+          _id:'',
+          nombre:''
+        },
+        consejo_id: {
+          nombre:'',
+          _id:''
+        },
+        geometry:[]
       },
+      marker:[0,0],
+      bounds: [
+               [21.8932641596, -82.8244219401],
+               [21.9016376414, -82.8096053901]
+         ],
+      center:[],
+          url: 'http://raster.enpa.iju.minag.cu/osm/{z}/{x}/{y}.jpg',
+          // url: 'http://localhost/raster/{z}/{x}/{y}.jpg',
+         attribution:
+         '&copy; <a mailto="geomatica@enpa.iju.minag.cu">Enpa IJ</a>',
+      
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo consejo' : 'Editar Consejo'
+        return this.editedIndex === -1 ? 'Nuevo punto de venta' : 'Editar punto de venta'
       },
     },
 
@@ -125,16 +247,32 @@ export default {
     },
 
     methods: {
-      initialize () {
+      async initialize () {
        
        let uri = '/api/puntos';
        this.$axios.get(uri).then(res=>{
          this.desserts = res.data.data
-       })
+       });
 
+        uri = '/api/consejos';
+        await this.$axios.get(uri).then(res=>{
+          this.consejos = res.data.data
+        })
+
+        uri = '/api/unidades';
+        await this.$axios.get(uri).then(res=>{
+          this.unidades = res.data.data
+        })
 
       },
 
+      newItem () {
+        this.editedIndex = -1
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.dialog = true
+
+
+      },
       editItem (item) {
         this.editedIndex = this.desserts.indexOf(item)
         this.editedItem = Object.assign({}, item)
@@ -175,14 +313,30 @@ export default {
           this.$axios.put(uri,this.editedItem).then(res=>{
             this.snack.text = "Punto de venta editado correctamente";
             this.snack.active = true;
+            this.close();
           })
-        } else {
-          this.desserts.push(this.editedItem)
+        }  else {
+          let data = this.editedItem;
+          data.geometry = [ 
+            this.marker.lng,
+            this.marker.lat,
+            0.0 
+          ];
+          let uri = '/api/puntos/';
+          this.$axios.post(uri,data).then(res=>{
+            this.snack.text = "Punto de venta creado correctamente";
+            this.snack.active = true;
+            this.desserts.push(res.data.item);
+            this.close()
+          })
+          console.log(data);
         }
-        this.close()
       },
       editMap(item){
         this.$router.push('/config/puntos/editMap/'+item._id)
+      },
+      addMarker(e){
+        this.marker = e.latlng;
       }
     },
 }

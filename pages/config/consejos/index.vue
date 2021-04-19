@@ -107,14 +107,14 @@
           >
             mdi-map
           </v-icon>
-          <v-icon
+          <!-- <v-icon
             color="red"
             small
             @click="deleteItem(item)"
             disabled
           >
             mdi-delete
-          </v-icon>
+          </v-icon> -->
         </template>
         <template v-slot:no-data>
           <v-btn

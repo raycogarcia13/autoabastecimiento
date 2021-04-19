@@ -45,6 +45,17 @@
                           v-model="editedItem.nombre"
                           label="Producto"
                         ></v-text-field>
+
+                        <v-autocomplete
+                            v-model="editedItem.tipo_id"
+                            :items="tipos"
+                            item-text="nombre"
+                            item-value="_id"
+                            chips
+                            small-chips
+                            label="Tipo de producto"
+                          ></v-autocomplete>
+
                       </v-col>
                       <v-col
                         cols="12"
@@ -84,9 +95,9 @@
             <v-spacer></v-spacer>
             <v-tooltip left>
                <template v-slot:activator="{ on, attrs }">
-                  <v-btn color="primary" disabled  v-bind="attrs" v-on="on" fab small><v-icon>mdi-plus</v-icon></v-btn>
+                  <v-btn color="secundary" @click="newItem()" v-bind="attrs" v-on="on" fab small><v-icon>mdi-plus</v-icon></v-btn>
                </template>
-               <span>Agregar Producto</span>
+               <span>Agregar Punto de venta</span>
             </v-tooltip>
           </v-toolbar>
         </template>
@@ -142,6 +153,7 @@ export default {
         text: '',
         timeout: 2000,
       },
+      tipos:[],
       search: '',
       dialogDelete: false,
       headers: [
@@ -159,17 +171,16 @@ export default {
       editedIndex: -1,
       editedItem: {
         nombre: '',
-        habitantes: 0,
-        tipo_id:{
-          nombre:''
-        }
+        sipa_id: 0,
+        rendimiento: 0,
+        tipo_id:""
       },
       defaultItem: {
         nombre: '',
-        habitantes: 0,
-        tipo_id:{
-          nombre:''
-        }
+        nombre: '',
+        sipa_id: 0,
+        rendimiento: 0,
+        tipo_id:""
       },
     }),
 
@@ -193,14 +204,25 @@ export default {
     },
 
     methods: {
-      initialize () {
+      async initialize () {
        
        let uri = '/api/productos';
-       this.$axios.get(uri).then(res=>{
+       await this.$axios.get(uri).then(res=>{
          this.desserts = res.data.data
        })
 
+       uri = '/api/get_tipos';
+       await this.$axios.get(uri).then(res=>{
+         this.tipos = res.data.data
+       })
 
+
+      },
+
+      newItem () {
+        this.editedIndex = -1
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.dialog = true
       },
 
       editItem (item) {
@@ -241,13 +263,19 @@ export default {
           Object.assign(this.desserts[this.editedIndex], this.editedItem)
           let uri = '/api/productos/';
           this.$axios.put(uri,this.editedItem).then(res=>{
-            this.snack.text = "Punto de venta editado correctamente";
+            this.snack.text = "Producto editado correctamente";
             this.snack.active = true;
+            this.close()
           })
         } else {
-          console.log('a insertar');
+          let uri = '/api/productos/';
+          this.$axios.post(uri,this.editedItem).then(res=>{
+            this.snack.text = "Producto creado correctamente";
+            this.snack.active = true;
+            this.desserts.push(res.data.item);
+            this.close()
+          })
         }
-        this.close()
       },
     },
 }

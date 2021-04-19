@@ -7,15 +7,22 @@ module.exports = app => {
     var stateRepository = new Repository();
 
     return {
-        store: (req, res) => {
-            stateRepository.save(req, function(error, state) {
-                if (!error) {
-                    return res.json({ message: 'saved', _id: state._id, data: state });
-                } else {
-                    return res.status(500).json({ message: 'Error saving state', error: error });
+        store: async(req, res) => {
+
+            console.log(req.body);
+            let item = await Comer({
+                nombre: req.body.nombre,
+                consejo_id: req.body.consejo_id,
+                basep_id: req.body.basep_id,
+                location: {
+                    type: "Point",
+                    coordinates: req.body.geometry
                 }
-            });
+            }).save()
+
+            return res.json({ status: 'success', item });
         },
+
         index: async(req, res) => {
 
             let data = await Comer.find()
