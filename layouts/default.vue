@@ -186,6 +186,11 @@ export default {
       ],
       querys:[
         {
+          icon: 'mdi-chart-histogram',
+          title: 'Históricos',
+          to: '/querys/historicos'
+        },
+        {
           icon: 'mdi-table-eye',
           title: 'Demanda del mes',
           to: '/querys/demanda_mes'
